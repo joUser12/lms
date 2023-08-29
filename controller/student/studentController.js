@@ -172,7 +172,7 @@ exports.studentUpdateProfile = asyncHandler(async (req, res) => {
 // @route PUT/api/student/:id/update
 // @acess Privateadmin only
 exports.adminUpdateStudent = asyncHandler(async (req, res) => {
-    const { program, classLevels, academicYear, email,name,prefectName } = req.body;
+    const { program, classLevels, academicYear, email,name,prefectName,isSuspended,isWithdrawn } = req.body;
 //   find the student by id
     const studentFound = await Student.findById(req.params.studentId);
     if (!studentFound) {
@@ -186,7 +186,9 @@ exports.adminUpdateStudent = asyncHandler(async (req, res) => {
                 email,
                 academicYear,
                 program,
-                prefectName
+                prefectName,
+                isSuspended,
+                isWithdrawn
             },
             $addToSet:{
                 classLevels
@@ -214,7 +216,7 @@ if(!studentFound)
 throw new Error('Student not found');
 
 // get Exam
-const examFound = await Exam.findById(req.params.examID).populate("questions")
+const examFound = await Exam.findById(req.params.examID).populate("questions").populate("academicTerm")
 
 if(!examFound)
 throw new Error('exam not found');
@@ -239,8 +241,8 @@ let unAnsweredQuestions =0;
 let answeredQuestions =[];
 
 // check user attempted all question - not need 
-// if(studentAnswer.length != questions.length)
-// throw new Error('you not answser all questions');
+if(studentAnswer.length != questions.length)
+throw new Error('you not answser all questions');
 
 // check  if student has  already take exam
 // const studentFoundResults = await ExamResult.findById(studentFound?._id);
@@ -248,7 +250,11 @@ const studentFoundResults = await ExamResult.findOne({student:studentFound?._id}
 if(studentFoundResults){
   throw new Error('You have already wriiten this exam');
 }
- 
+
+// check  if student is suspended/withdrawn
+if(studentFound.isWithdrawn || studentFound.isSuspended){
+  throw new Error('You are suspended  you canit take the exam');
+}
 
 // check for answer
 for (let i=0;i<questions.length ;i++){
@@ -300,7 +306,7 @@ remarks= 'poor'
 // genearate Exam Results
 
 const examResults = await ExamResult.create({
-  student:studentFound?._id,
+  studentID:studentFound?.studentId,
   exam:examFound?.id,
   grade,
   score,
@@ -311,24 +317,69 @@ const examResults = await ExamResult.create({
   academicYear:examFound?.academicYear
 })
 
-// push the result into
-studentFound.examResults.push(examResults?._id);
+// // push the result into
+// studentFound.examResults.push(examResults?._id);
+// // save
+// await studentFound.save();
 
-// save
-await studentFound.save();
+
+
+// promote level 200
+if(examFound.academicTerm.name ==='2 -term' && 
+status === 'passed' && studentFound?.currentClassLevel ==="level 100"
+){
+  studentFound.classLevels.push('level 200');
+  studentFound.currentClassLevel = 'level 200'
+  studentFound.save();
+}
+
+// promote level 300
+if(examFound.academicTerm.name ==='2 -term' && 
+status === 'passed' && studentFound?.currentClassLevel ==="level 200"
+){
+  studentFound.classLevels.push('level 300');
+  studentFound.currentClassLevel = 'level 300'
+  studentFound.save();
+}
+
+// promote level 400
+if(examFound.academicTerm.name ==='2 -term' && 
+status === 'passed' && studentFound?.currentClassLevel ==="level 300"
+){
+  studentFound.classLevels.push('level 400');
+  studentFound.currentClassLevel = 'level 400'
+  studentFound.save();
+}
+
+// promote student to graduate 
+
+if(examFound.academicTerm.name ==='2 -term' && 
+status === 'passed' && studentFound?.currentClassLevel ==="level 400"
+){
+  studentFound.isGraduated = true;
+  studentFound.yearGraduated = new Date;
+  studentFound.save();
+}
+
+// res.status(200).json({
+//   // status:"success",
+//   studentFound,
+//   totalQuestion,
+//   correctanswer:correctAnswer,
+//  scoremark:score,
+//  grade,
+//  status,
+//  remarks,
+//  wronganser:wrongAnswer,
+//  unanswer:unAnsweredQuestions,
+//  answeredQuestions,
+// //  examResults
+// })
 
 res.status(200).json({
-  // status:"success",
-  totalQuestion,
-  correctanswer:correctAnswer,
- scoremark:score,
- grade,
- status,
- remarks,
- wronganser:wrongAnswer,
- unanswer:unAnsweredQuestions,
- answeredQuestions,
- examResults
+  status:"success",
+  data:"you have submitted your exam . check later for the results"
+
 })
 
 });

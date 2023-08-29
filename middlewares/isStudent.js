@@ -1,10 +1,10 @@
 const Student = require("../model/Academic/Student");
 const isStudent = async (req, res, next) => {
-  console.log(req.userAuth);
   // find the user
-  const userId = req.userAuth?._id;
+  const userId = req?.userAuth?._id;
   const studentFound = await Student.findById(userId);
-  // check Student
+
+  // check Student 
   if (studentFound?.role === "student") {
     next();
   } else {
