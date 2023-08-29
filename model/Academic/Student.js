@@ -7,7 +7,7 @@ const studentSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: true, 
     },
     password: {
       type: String,
@@ -112,7 +112,7 @@ const studentSchema = new mongoose.Schema(
     // ],
     //year group
     yearGraduated: {
-      type: String,
+      type: Date,
     },
   },
   {
