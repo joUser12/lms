@@ -23,6 +23,12 @@ const adminSchema = new mongoose.Schema(
       type: String,
       default: "admin",
     },
+    resetToken: {
+      type: String,
+    },
+    resetTokenExpiration: {
+      type: Date,
+    },
     academicTerms: [
       {
         type: mongoose.Schema.Types.ObjectId,

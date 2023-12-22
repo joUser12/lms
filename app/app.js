@@ -18,6 +18,8 @@ const examRouter = require("../routes/academics/exam");
 const studentRouter = require("../routes/Staff/student");
 const questionRouter = require("../routes/academics/question");
 const examResults = require("../routes/academics/examResults");
+const  fileUpload = require("../routes/fileUpload/fileUpload");
+// const fileUploads = require("../controller/fileUpload/fileUpload");
 
 const app = express();
 // Middlewares
@@ -46,6 +48,9 @@ app.use("/api/v1/exams", examRouter);
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/question", questionRouter);
 app.use("/api/v1/exam-results", examResults);
+
+app.use('/file', express.static('upload/images'));
+app.use("/api/v1/file", fileUpload);
 // Error Handling
 app.use(globalErrorHandler);
 app.use(notFoundErr);

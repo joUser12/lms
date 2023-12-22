@@ -12,6 +12,10 @@ const ProgramSchema = new Schema(
       type: String,
       required: true,
     },
+    imageUrl:{
+      type:String,
+      required:true
+    },
     duration: {
       type: String,
       required: true,

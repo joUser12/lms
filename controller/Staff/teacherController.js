@@ -40,29 +40,25 @@ exports.adminRegisterTeacher = asyncHandler(async (req, res) => {
 
 exports.teacherLogin = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
   // find the user
   const teacher = await Teacher.findOne({ email });
   if (!teacher) {
     return res, json({ message: "Invalid login credentials" });
   }
+  console.log(teacher);
   //   verify password
   const isMatched = await isPassMatch(password, teacher.password);
   if (!isMatched) {
     return res.json({ message: "Invalid login credentials" });
   } else {
+    const { password, ...responseTeacher } = teacher._doc;
+    responseTeacher.token = generateToken(teacher._id);
     res.status(200).json({
       status: "success",
       message: "Teacher logged in successfully",
-      data: generateToken(teacher._id),
+      data: responseTeacher,
     });
   }
-  // send teacher data
-  res.status(201).json({
-    status: "success",
-    message: "Teacher registered Successfully",
-    data: teacherCreated,
-  });
 });
 
 // @desc  GetAll teacher admin
@@ -174,17 +170,17 @@ exports.adminUpdateTeacherProfile = asyncHandler(async (req, res) => {
     throw new Error("teacher not found");
   }
 
-  if(teacherFound.isWitdrawn){
+  if (teacherFound.isWitdrawn) {
     throw new Error("Action denied");
   }
   // assign a program
-  if(program){
+  if (program) {
     teacherFound.program = program;
     await teacherFound.save();
   }
 
   // assign class level
-  if(classLevel){
+  if (classLevel) {
     teacherFound.classLevel = classLevel;
     await teacherFound.save();
     res.status(200).json({
@@ -194,8 +190,8 @@ exports.adminUpdateTeacherProfile = asyncHandler(async (req, res) => {
     });
   }
 
-   // assign subject
-   if(subject){
+  // assign subject
+  if (subject) {
     teacherFound.subject = subject;
     await teacherFound.save();
     res.status(200).json({
@@ -205,20 +201,14 @@ exports.adminUpdateTeacherProfile = asyncHandler(async (req, res) => {
     });
   }
 
-    // assign academicYear
-    if(academicYear){
-      teacherFound.academicYear = academicYear;
-      await teacherFound.save();
-      res.status(200).json({
-        status: "success",
-        data: teacherFound,
-        message: "teacher updated sucessfully",
-      });
-    }
-
-  // res.status(200).json({
-  //   status: "success",
-  //   data: teacher,
-  //   message: "teacher updated sucessfully",
-  // });
+  // assign academicYear
+  if (academicYear) {
+    teacherFound.academicYear = academicYear;
+    await teacherFound.save();
+    res.status(200).json({
+      status: "success",
+      data: teacherFound,
+      message: "teacher updated sucessfully",
+    });
+  }
 });

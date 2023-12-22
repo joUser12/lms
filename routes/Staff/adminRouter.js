@@ -1,7 +1,7 @@
 const express = require("express");
 
 const adminRouter = express.Router(); 
-const {registerAdminCtrl,loginAdminCtrl,getAllAdminCtrl,deleteAdminCtrl,getSingleProfileCtrl, updateAdminCtrl, adminUnSuspendTeacher, adminSuspendTeacher, adminUnPublishExamResult, adminPublishExamResult, adminUnWithdrawTeacher} = require("../../controller/Staff/adminController");
+const {registerAdminCtrl,resetPasswordCtrl,forgotAdminCtrl,loginAdminCtrl,getAllAdminCtrl,deleteAdminCtrl,getSingleProfileCtrl, updateAdminCtrl, adminUnSuspendTeacher, adminSuspendTeacher, adminUnPublishExamResult, adminPublishExamResult, adminUnWithdrawTeacher} = require("../../controller/Staff/adminController");
 const isLogin = require("../../middlewares/isLogin");
 const isAdmin = require("../../middlewares/isAdmin");
 
@@ -11,6 +11,10 @@ adminRouter.post("/register",registerAdminCtrl);
 // admin login
 adminRouter.post("/login",loginAdminCtrl)
 
+// forget password
+adminRouter.post("/forgot-password",forgotAdminCtrl);
+
+adminRouter.post("/reset-password",resetPasswordCtrl)
 
 // Get all admins
 adminRouter.get("/",isLogin,getAllAdminCtrl);
