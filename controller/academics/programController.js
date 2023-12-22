@@ -6,7 +6,7 @@ const Program = require("../../model/Academic/Program");
 // @route POST/api/program
 // @acess Private
 exports.createProgram = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description ,imageUrl} = req.body;
   // check if exists
   const programFound = await Program.findOne({ name });
   if (programFound) {
@@ -16,6 +16,7 @@ exports.createProgram = asyncHandler(async (req, res) => {
   const programcreated = await Program.create({
     name,
     description,
+    imageUrl,
     createdBy: req.userAuth._id,
   });
 

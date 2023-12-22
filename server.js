@@ -4,13 +4,6 @@ require("./config/dbConnect")
 const app = require("./app/app")
 const swaggerUi = require('swagger-ui-express');
 
- swaggerDocument = require('./swagger.json');
-
- app.use(
-    '/api-docs',
-    swaggerUi.serve, 
-    swaggerUi.setup(swaggerDocument)
-  );
 const PORT=  process.env.PORT || 3000;
 
 

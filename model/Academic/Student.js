@@ -5,14 +5,19 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    imageUrl: {
+      type: String,
+      required: true
+    },
     email: {
       type: String,
-      required: true, 
+      required: true,
     },
     password: {
       type: String,
       required: true,
     },
+
     studentId: {
       type: String,
       required: true,
@@ -41,7 +46,7 @@ const studentSchema = new mongoose.Schema(
     classLevels: [
       {
         // type: mongoose.Schema.Types.ObjectId,
-        type:String
+        type: String
       },
     ],
     currentClassLevel: {
@@ -122,5 +127,5 @@ const studentSchema = new mongoose.Schema(
 
 //model
 const Student = mongoose.model("Student", studentSchema);
-
+console.log(studentSchema);
 module.exports = Student;
